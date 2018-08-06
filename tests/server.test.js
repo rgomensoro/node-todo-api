@@ -5,6 +5,10 @@ const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 const {User} = require('./../models/user');
 
+beforeEach((done) => {
+    Todo.remove({}).then (() => done());
+});
+
 describe('POST /todos', () => {
 
     it('Should create a new Todo.', (done) =>{
