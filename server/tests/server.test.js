@@ -13,13 +13,13 @@ describe('POST /todos', () => {
 
     it('Should create a new Todo.', (done) =>{
 
-        var text = 'Test too text';
+        var text = 'Test todo text';
 
         request(app)
             .post('/todos')
             .send({text})
-            .expect(200)
-            .expect(() =>{
+            .expect(201)
+            .expect((res) =>{
                 expect(res.body.text).toBe(text);
             })
 
