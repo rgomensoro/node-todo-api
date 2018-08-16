@@ -9,6 +9,7 @@ var {User} = require('./models/user');
 
 
 var app = express();
+const port = process.env.PORT || 3000
 
 app.use(bodyParser.json());
 
@@ -59,8 +60,12 @@ app.get('/todos/:id', (req,res) => {
 
 
 
-app.listen(3000, () => {
-    console.log('Started. Listen on port 3.000');
+app.listen(port, () => {
+    if (port == 3000) {
+        console.log('Started. Listen on local port 3.000');
+    } else{
+        console.log(`Started. Listen on port ${port}`);
+    }
 });
 
 module.exports = {app};
