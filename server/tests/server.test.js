@@ -1,13 +1,16 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectID} = require ('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 const {User} = require('./../models/user');
 
 var todos = [{
+    _id: new ObjectID(),
     text: "my first test Todo"
 },{
+    _id: new ObjectID(),
     text: "my second test Todo"
 }];
 
@@ -16,6 +19,7 @@ beforeEach((done) => {
     Todo.remove({}).then (() => {
         return Todo.insertMany(todos);
     }).then(()=> done());
+
 });
 
 describe('POST /todos', () => {
@@ -77,4 +81,36 @@ describe('GET /todos', () => {
         })
         .end (done);
     });
+});
+
+describe('GET /todos:id', () => {
+
+    it('Should get a valid todo.', (done) =>{
+
+        request(app)
+        .get(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .expect((res) =>{
+            expect (res.body.todo.text).toBe(todos[0].text);
+        })
+        .end (done);
+    });
+
+    it('Should get a invalid Object error (400).', (done) =>{
+
+        request(app)
+            .get('/todos/123abc}')
+        .expect(400)
+        .end (done);
+    });
+
+    it('Should not get a todo (404)', (done) =>{
+
+        request(app)
+        .get(`/todos/${new ObjectID().toHexString()}`)
+        .expect(404)
+        .end (done);
+    });
+
+
 });
