@@ -22,6 +22,8 @@ var {mongoose} = require ('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
+var {authenticate} = require('./middleware/authenticate');
+
 
 var app = express();
 const port = process.env.PORT
@@ -127,6 +129,7 @@ app.patch('/todos/:id', (req,res) => {
 });
 
 // USERS Routes
+// User Signup
 app.post('/users', (req,res)=>{
     
     var body = _.pick(req.body, ['email','password']);
@@ -141,6 +144,13 @@ app.post('/users', (req,res)=>{
         res.status(400).send(`Error. ${e.message}`);
     });
 
+});
+
+//User profile
+
+
+app.get('/users/me', authenticate, (req,res) => {
+    res.send(req.user);
 });
 
 
