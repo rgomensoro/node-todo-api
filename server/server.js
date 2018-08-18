@@ -28,6 +28,7 @@ const port = process.env.PORT
 
 app.use(bodyParser.json());
 
+//TODOS Routes
 app.post('/todos', (req,res)=>{
     var todo = new Todo ({
         text: req.body.text
@@ -41,7 +42,6 @@ app.post('/todos', (req,res)=>{
     });
 
 });
-
 
 app.get('/todos', (req,res) => {
 
@@ -122,6 +122,22 @@ app.patch('/todos/:id', (req,res) => {
      }, e => {
         res.status(400).send(`Error. ${e.message}`);
 
+    });
+
+});
+
+// USERS Routes
+app.post('/users', (req,res)=>{
+    var user = new User ({
+        email: req.body.email,
+        password: req.body.password
+    });
+
+    user.save().then((doc) => {
+        res.status(201).send(doc);
+    }, (e) => {
+       
+        res.status(400).send(`Error. ${e.message}`);
     });
 
 });
