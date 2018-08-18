@@ -98,10 +98,14 @@ app.patch('/todos/:id', (req,res) => {
     Todo.findByIdAndUpdate(id,
         { $set: todo}, {new: true }).then ((todo) => {
     
-            res.send ({todo});
+            if (!todo){
+                return res.status(404).send(`Todo not found`);
+           }
+    
+           res.send ({todo});
 
-     }, err => {
-        res.status(400).send(`Error. ${err.message}`);
+     }, e => {
+        res.status(400).send(`Error. ${e.message}`);
 
     });
 

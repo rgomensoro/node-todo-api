@@ -11,7 +11,9 @@ var todos = [{
     text: "my first test Todo"
 },{
     _id: new ObjectID(),
-    text: "my second test Todo"
+    text: "my second test Todo",
+    completed: true,
+    completedAt: 123456
 }];
 
 
@@ -157,5 +159,97 @@ describe('DELETE /todos:id', () => {
         .end (done);
     });
 
+
+});
+
+describe('PATCH /todos:id', () => {
+
+    it('Should update a valid todo.', (done) =>{
+
+        var hexID = todos[0]._id.toHexString();
+        var todo = {
+            text: "Updated todo",
+            completed: true
+        }
+
+        request(app)
+            .patch(`/todos/${hexID}`)
+            .send(todo)
+            .expect(200)
+            .expect((res) =>{
+                expect (res.body.todo.text).toBe(todo.text);
+                expect (res.body.todo.completed).toBeTruthy();
+                expect (res.body.todo.completedAt).toBeTruthy();
+       })
+        .end ((err,res) =>{
+            if (err) {
+                return done(err);
+            }
+
+        Todo.findById(hexID).then((todo) => {
+            expect(todo).toBeDefined();
+            done();
+        }).catch((e) => done(e));
+    });
+});
+
+    it('Should clear completedAt when set completed FALSE.', (done) =>{
+ 
+        var hexID = todos[1]._id.toHexString();
+        var todo = {
+            text: "Updated todo second",
+            completed: false
+        }
+
+        request(app)
+            .patch(`/todos/${hexID}`)
+            .send(todo)
+            .expect(200)
+            .expect((res) =>{
+                expect (res.body.todo.text).toBe(todo.text);
+                expect (res.body.todo.completed).toBeFalsy();
+                expect (res.body.todo.completedAt).toBeFalsy();
+        })
+        .end ((err,res) =>{
+            if (err) {
+                return done(err);
+            }
+
+        Todo.findById(hexID).then((todo) => {
+            expect(todo).toBeDefined();
+            done();
+        }).catch((e) => done(e));
+
+        });
+
+    });
+
+    it('Should not update a invalid Object error (400).', (done) =>{
+
+        var todo = {
+            text: "Updated todo second",
+            completed: false
+        }
+
+        request(app)
+            .patch('/todos/123abc}')
+            .send(todo)
+        .expect(400)
+        .end (done);
+    });
+
+    it('Should not update a inexistent todo (404)', (done) =>{
+
+        var todo = {
+            text: "Updated todo second",
+            completed: false
+        }
+
+        request(app)
+            .patch(`/todos/${new ObjectID().toHexString()}`)
+            .send(todo)
+        .expect(404)
+        .end (done);
+    });
 
 });
