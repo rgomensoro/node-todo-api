@@ -128,15 +128,16 @@ app.patch('/todos/:id', (req,res) => {
 
 // USERS Routes
 app.post('/users', (req,res)=>{
-    var user = new User ({
-        email: req.body.email,
-        password: req.body.password
-    });
+    
+    var body = _.pick(req.body, ['email','password']);
+    var user = new User(body);
 
-    user.save().then((doc) => {
-        res.status(201).send(doc);
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        res.header('x-auth',token).status(201).send(user);
     }, (e) => {
-       
+
         res.status(400).send(`Error. ${e.message}`);
     });
 
