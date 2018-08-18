@@ -70,8 +70,8 @@ app.delete('/todos/:id', (req,res) => {
        if (!todo){
             return res.status(404).send(`Todo not found`);
        }
-       
-       res.send ( `Todo removed: ${todo._id}`);
+
+       res.send ({todo});
 
     }, e =>{
         res.status(400).send(`Error. ${e.message}`);

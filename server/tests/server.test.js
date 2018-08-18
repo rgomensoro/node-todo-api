@@ -114,3 +114,35 @@ describe('GET /todos:id', () => {
 
 
 });
+
+describe('DELETE /todos:id', () => {
+
+    it('Should delete a valid todo.', (done) =>{
+
+        request(app)
+        .delete(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .expect((res) =>{
+            expect (res.body.todo.text).toBe(todos[0].text);
+        })
+        .end (done);
+    });
+
+    it('Should delete a invalid Object error (400).', (done) =>{
+
+        request(app)
+            .delete('/todos/123abc}')
+        .expect(400)
+        .end (done);
+    });
+
+    it('Should not delete a todo (404)', (done) =>{
+
+        request(app)
+        .delete(`/todos/${new ObjectID().toHexString()}`)
+        .expect(404)
+        .end (done);
+    });
+
+
+});
