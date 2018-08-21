@@ -240,3 +240,82 @@ describe('PATCH /todos:id', () => {
     });
 
 });
+
+describe('GET /users/me', () => {
+
+    it('Should return user if authenticated.', (done) =>{
+
+        request(app)
+            .get('/users/me')
+            .set('x-auth',users[0].tokens[0].token)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body._id).toBe(users[0]._id.toHexString());
+                expect(res.body.email).toBe(users[0].email);
+
+            })
+            .end (done);
+    });
+
+    it('Should return 401 if not authenticated.', (done) =>{
+
+        request(app)
+        .get('/users/me')
+        .expect(401)
+        .end (done);
+
+    });
+
+});
+
+describe('POST /users', () => {
+
+    it('Should create a user.', (done) =>{
+
+        var user = {     
+        email: 'nandagomen@gmail.com',
+        password: '123abc'
+    };
+
+        request(app)
+            .post('/users')
+            .send(user)
+            .expect(201)
+            .expect((res) => {
+                expect(res.body._id).toBeTruthy();
+                expect(res.body.email).toBe(user.email);
+
+            })
+            .end(done);
+
+    });
+
+    it('Should return validation error if invalid request.', (done) =>{
+
+        var user = {     
+            email: 'nandagomengmail.com',
+            password: '123abc'
+        };
+
+        request(app)
+        .post('/users')
+        .send(user)
+        .expect(400)
+        .end(done);
+});
+
+    it('Should not create a user if email is in use.', (done) =>{
+
+        var user = {     
+            email: users[0].email,
+            password: '123abc'
+        };
+
+        request(app)
+        .post('/users')
+        .send(user)
+        .expect(400)
+        .end(done);
+    });
+
+});
